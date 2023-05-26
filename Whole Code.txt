@@ -1,0 +1,357 @@
+CREATE TABLE Employee(
+EmployeeID int NOT NULL PRIMARY KEY ,
+Fname varchar2(25) NOT NULL,
+Mname varchar2(25),
+Lname varchar2(25) NOT NULL,
+JobType varchar2(30) NOT NULL,
+Gender varchar2(10) NOT NULL,
+Phone varchar2(50) NOT NULL,
+Birthdate date NOT NULL,
+WorkingHours int NOT NULL,
+RatePerHour DECIMAL(15,4) NOT NULL,
+Supervisor_ID int ,
+CONSTRAINT Supervisor_ID_FK FOREIGN KEY (Supervisor_ID) REFERENCES Employee(EmployeeID));
+
+
+CREATE TABLE Dr(
+Did int NOT NULL PRIMARY KEY,
+CONSTRAINT DID_FK FOREIGN KEY (Did) REFERENCES Employee(EmployeeID));
+
+CREATE TABLE Nurse(
+Nid int NOT NULL PRIMARY KEY,
+CONSTRAINT NID_FK FOREIGN KEY (Nid) REFERENCES Employee(EmployeeID));
+
+CREATE TABLE Reception(
+Rcode varchar2(50) NOT NULL PRIMARY KEY ,
+Floor int );
+
+CREATE TABLE Receptionist(
+RiD int NOT NULL PRIMARY KEY,
+Rcode varchar2(50) NOT NULL,
+CONSTRAINT Receptionist_ID_FK FOREIGN KEY(RiD) REFERENCES Employee(EmployeeID),
+CONSTRAINT Rcode_ID_FK FOREIGN KEY(Rcode) REFERENCES Reception(Rcode));
+
+CREATE TABLE Patient(
+PiD int NOT NULL PRIMARY KEY,
+Fname varchar2(25) NOT NULL,
+Mname varchar2(25) NOT NULL,
+Lname varchar2(25) NOT NULL,
+Gender varchar2(10) NOT NULL,
+Phone varchar2(50) NOT NULL,
+Bdate date NOT NULL,
+Rid int NOT NULL,
+CONSTRAINT R_id_FK FOREIGN KEY (Rid) REFERENCES Receptionist(Rid));
+
+CREATE TABLE Appointment(
+Apcode int NOT NULL PRIMARY KEY,
+Apdate date NOT NULL,
+Did int NOT NULL,
+Pid int NOT NULL,
+Rid int NOT NULL,
+CONSTRAINT D_id_FK FOREIGN KEY (Did) REFERENCES Dr(Did),
+CONSTRAINT P_id_FK FOREIGN KEY (Pid) REFERENCES Patient(Pid),
+CONSTRAINT Re_id_FK FOREIGN KEY (Rid) REFERENCES Receptionist(Rid));
+
+CREATE TABLE Bill(
+Bcode int NOT NULL PRIMARY KEY,
+BLdate date NOT NULL,
+TotalCost DECIMAL(15,2) NOT NULL,
+Pid int NOT NULL,
+Rid int NOT NULL,
+CONSTRAINT Rec_id_FK FOREIGN KEY (Rid) REFERENCES Receptionist(Rid),
+CONSTRAINT Pa_id_FK FOREIGN KEY (Pid) REFERENCES Patient(Pid));
+
+CREATE TABLE Take_treatment(
+Tcode varchar2(50) NOT NULL PRIMARY KEY,
+cost DECIMAL(15,2) NOT NULL,
+Did int NOT NULL,
+Pid int NOT NULL,
+CONSTRAINT Pt_id_FK FOREIGN KEY (Pid) REFERENCES Patient(Pid),
+CONSTRAINT DR_id_FK FOREIGN KEY (Did) REFERENCES Dr(Did));
+
+
+
+CREATE TABLE Prescription(
+PsCode varchar2(50) NOT NULL PRIMARY KEY,
+PsDate Date,
+Pid int NOT NULL,
+Did int NOT NULL,
+Medname varchar2(25),
+CONSTRAINT Pat_id_FK FOREIGN KEY (Pid) REFERENCES Patient(Pid),
+CONSTRAINT Doc_Id_FK FOREIGN KEY (Did) REFERENCES Dr(Did));
+
+
+CREATE TABLE Medicine_info(
+Mname varchar2(25) NoT NULL PRIMARY KEY,
+Description varchar2(255) NOT NULL,
+Cost DECIMAL(15,4));
+
+
+
+CREATE TABLE Prescription_medicine(
+PsCode varchar2(50)NoT NULL PRIMARY KEY,
+Mname varchar2(25) NoT NULL,
+CONSTRAINT PsCode_FK FOREIGN KEY (PsCode) REFERENCES Prescription(PsCode),
+CONSTRAINT Mname_FK FOREIGN KEY (Mname) REFERENCES Medicine_info(Mname));
+
+CREATE TABLE Payroll(
+PrCode varchar2(50) NOT NULL PRIMARY KEY,
+Eid int NOT NULL,   
+CONSTRAINT Emp_ID_FK FOREIGN KEY (Eid) REFERENCES Employee(EmployeeID));
+
+
+CREATE TABLE Leave(
+Lcode int NoT NULL PRIMARY KEY,
+Reason varchar2(255),
+Days int,
+FromDate Date,
+ToDate Date,
+Eid int not null ,
+CONSTRAINT Empl_ID_FK FOREIGN KEY (Eid) REFERENCES Employee(EmployeeID));
+
+
+CREATE TABLE Treats(
+Did int NOT NULL,
+Pid int NOT NULL,
+PRIMARY KEY( Did, Pid),
+CONSTRAINT Doct_ID_FK FOREIGN KEY (Did) REFERENCES Dr(Did),
+CONSTRAINT Pati_id_FK FOREIGN KEY (Pid) REFERENCES Patient(Pid));
+
+
+CREATE TABLE Working_hours(
+WHCode int NOT NULL PRIMARY KEY,
+MonthlyWH NUMERIC(10),
+Overtime NUMERIC(10),
+w_Date Date,
+Eid int NOT NULL,
+CONSTRAINT Emplo_ID_FK FOREIGN KEY (Eid) REFERENCES Employee(EmployeeID));
+
+CREATE TABLE Bill_payment(
+Bill_id int not null,
+PaymentMethod varchar(10),
+PRIMARY KEY( Bill_id, PaymentMethod),
+CONSTRAINT Bill_id_FK FOREIGN KEY (Bill_id) REFERENCES Bill(Bcode));
+
+
+
+
+INSERT INTO Employee VALUES(1111, 'Muhammed', 'Khaled', 'Alharbi', 'Dr', 'male', 0567392049, to_date('11-2-1985','dd-mm-yyyy'), 12, 13.123, NULL );
+INSERT INTO Employee VALUES(1211, 'Yusra', 'Mohammed', 'almalki', 'Dr', 'female', 0511392049, to_date('12-7-1995','dd-mm-yyyy'), 13, 13.133, 1111 );
+INSERT INTO Employee VALUES(1121, 'Ahmed', 'Abdullah', 'Alzahrani', 'Dr', 'male', 0563492049, to_date('10-2-1978','dd-mm-yyyy'), 11, 20.123, 1111 );
+INSERT INTO Employee VALUES(1112, 'Fuaad', 'Mohammed', 'Bakhsh', 'Dr', 'male', 0567792049, to_date('11-2-1988','dd-mm-yyyy'), 11, 20.123, 1111 );
+INSERT INTO Employee VALUES(1311, 'Fatima', 'Ahmed', 'Alqarni', 'Dr', 'female', 0562222049, to_date('10-6-1978','dd-mm-yyyy'), 17, 20.123, 1111 );
+
+INSERT INTO Employee VALUES(2222, 'Suaad', 'Hameed', 'alsufyani', 'Nurse', 'female', 0543492049, to_date('10-2-1978','dd-mm-yyyy'), 11, 20.123, NULL );
+INSERT INTO Employee VALUES(2122, 'Bushra', 'Salem', 'Alshehri', 'Nurse', 'female', 0543112049, to_date('15-2-1998','dd-mm-yyyy'), 14, 20.123, 2222 );
+INSERT INTO Employee VALUES(2212, 'Mario', 'Jack', 'Goll', 'Nurse', 'male', 0543117049, to_date('15-2-1998','dd-mm-yyyy'), 14, 20.123, 2222 );
+INSERT INTO Employee VALUES(2221, 'Johny', 'depp', 'Scott', 'Nurse', 'male', 0543112099, to_date('15-2-1987','dd-mm-yyyy'), 14, 18.123, 2222 );
+INSERT INTO Employee VALUES(2322, 'Khadeeja', 'Ahmed', 'Alebrahim', 'Nurse', 'female', 0543114049, to_date('20-7-1998','dd-mm-yyyy'), 12, 20.123, 2222 );
+
+INSERT INTO Employee VALUES(3333, 'Fayzah', 'Salman', 'Alghamdi', 'Receptionist', 'female', 0543111049, to_date('15-2-1999','dd-mm-yyyy'), 14, 20.123,NULL);
+INSERT INTO Employee VALUES(3334, 'Salma', 'Khaled', 'Alturki', 'Receptionist', 'female', 0553111049, to_date('15-2-1999','dd-mm-yyyy'), 14, 20.123,3333);
+INSERT INTO Employee VALUES(3343, 'Majed', 'Abdullah', 'Halawani', 'Receptionist', 'male', 0553111049, to_date('1-2-1999','dd-mm-yyyy'), 14, 20.123,3333);
+INSERT INTO Employee VALUES(3433, 'Waleed', 'Mohammed', 'Alkhaldi', 'Receptionist', 'male', 0553011049, to_date('17-9-1997','dd-mm-yyyy'), 14, 20.123,3333);
+
+INSERT INTO Dr VALUES (1111);
+INSERT INTO Dr VALUES (1211);
+INSERT INTO Dr VALUES (1121);
+INSERT INTO Dr VALUES (1112);
+INSERT INTO Dr VALUES (1311);
+
+
+INSERT INTO Nurse VALUES (2222);
+INSERT INTO Nurse VALUES (2122);
+INSERT INTO Nurse VALUES (2212);
+INSERT INTO Nurse VALUES (2221);
+INSERT INTO Nurse VALUES (2322);
+
+
+
+
+INSERT INTO Reception VALUES (1134,1);
+INSERT INTO Reception VALUES (1244,2);
+INSERT INTO Reception VALUES (1234,3);
+INSERT INTO Reception VALUES (1224,4);
+
+
+
+INSERT INTO Receptionist VALUES (3333,1134);
+INSERT INTO Receptionist VALUES (3334,1244);
+INSERT INTO Receptionist VALUES (3343,1234);
+INSERT INTO Receptionist VALUES (3433,1224);
+
+
+INSERT INTO patient VALUES (7777,'khled', 'hamad', 'almalki', 'male',0565666775,to_date('12-11-1988','dd-mm-yyyy'), 3333);
+INSERT INTO patient VALUES (7757,'Huda', 'Omar', 'Bakhsh', 'female', 0565646775, to_date('8-11-2004','dd-mm-yyyy'), 3333);
+INSERT INTO patient VALUES (7177,'Wejdan', 'Fayes', 'alqarni', 'female',0565066775,to_date(' 7-7-2007', 'dd-mm-yyyy'),3334);
+INSERT INTO patient VALUES (7773,'Hala', 'Muhammed', 'alOtaibi', 'female', 0555666775,to_date(' 12-11-2005','dd-mm-yyyy'), 3334);
+INSERT INTO patient VALUES (7717,'Saud', 'Abdulrahman', 'Mahfoz', 'male',0544116775,to_date( '11-12-1977','dd-mm-yyyy'), 3343);
+INSERT INTO patient VALUES (7707,'Maher', 'Abdullah', 'almalki', 'male',0565661775,to_date( '12-11-1988','dd-mm-yyyy'), 3343);
+INSERT INTO patient VALUES (7727,'Sumayya', 'Khaled', 'Alnahdi', 'female',0555666745,to_date(' 2-4-2011', 'dd-mm-yyyy'),3433);
+INSERT INTO patient VALUES (7772,'Amal', 'Yaser', 'Ramadan', 'female',0575666775, to_date('10-8-1998', 'dd-mm-yyyy'),3433);
+INSERT INTO patient VALUES (7774,'Abrar', 'Saad', 'Alghamdi', 'female',0565333775,to_date( '1-1-2001','dd-mm-yyyy'), 3333);
+
+INSERT INTO Appointment VALUES (4444, to_date('16-8-2021','dd-mm-yyyy'), 1111, 7773, 3333);
+INSERT INTO Appointment VALUES (4441, to_date('01-11-2022','dd-mm-yyyy'), 1111, 7777, 3333);
+INSERT INTO Appointment VALUES (4442, to_date('01-11-2021','dd-mm-yyyy'), 1211, 7757, 3333);
+INSERT INTO Appointment VALUES (4443, to_date('9-9-2021','dd-mm-yyyy'), 1211, 7177, 3343);
+INSERT INTO Appointment VALUES (4445, to_date('12-11-2021','dd-mm-yyyy'), 1121, 7707, 3343);
+INSERT INTO Appointment VALUES (4446, to_date('1-12-2021','dd-mm-yyyy'), 1121, 7727, 3334);
+INSERT INTO Appointment VALUES (4447, to_date('01-11-2021','dd-mm-yyyy'), 1112, 7772, 3334);
+INSERT INTO Appointment VALUES (4448, to_date('05-7-2020','dd-mm-yyyy'), 1311, 7774, 3433);
+INSERT INTO Appointment VALUES (4449, to_date('23-10-2020','dd-mm-yyyy'), 1112, 7717, 3433);
+
+INSERT INTO Bill VALUES (0001, to_date('23-10-2020','dd-mm-yyyy'), 250.35, 7717, 3433);
+INSERT INTO Bill VALUES (0010, to_date('05-7-2020','dd-mm-yyyy'), 70.00, 7774, 3433);
+INSERT INTO Bill VALUES (0011, to_date('01-11-2021','dd-mm-yyyy'), 1500.35, 7772, 3334);
+INSERT INTO Bill VALUES (0100, to_date('01-12-2021','dd-mm-yyyy'), 350.10, 7727, 3334);
+INSERT INTO Bill VALUES (0101, to_date('12-11-2021','dd-mm-yyyy'), 250.15, 7707, 3343);
+INSERT INTO Bill VALUES (0110, to_date('09-9-2021','dd-mm-yyyy'), 250.35, 7177, 3343);
+INSERT INTO Bill VALUES (0111, to_date('01-11-2021','dd-mm-yyyy'), 1500.35, 7757, 3333);
+INSERT INTO Bill VALUES (1000, to_date('01-11-2022','dd-mm-yyyy'), 1200.20, 7777, 3333);
+INSERT INTO Bill VALUES (1001, to_date('16-8-2021','dd-mm-yyyy'), 70.00, 7773, 3333);
+
+
+
+INSERT INTO Take_treatment VALUES ('a350',970.40, 1111, 7773);
+INSERT INTO Take_treatment VALUES ('a351',650.20, 1111, 7777);
+INSERT INTO Take_treatment VALUES ('a352',250.35, 1211, 7757);
+INSERT INTO Take_treatment VALUES ('a353',300.35, 1211, 7177);
+INSERT INTO Take_treatment VALUES ('a354',740.15, 1121, 7707);
+INSERT INTO Take_treatment VALUES ('a355',1000.10, 1121, 7727);
+INSERT INTO Take_treatment VALUES ('a356',250.35, 1112, 7772);
+INSERT INTO Take_treatment VALUES ('a357',500.00, 1311, 7774);
+INSERT INTO Take_treatment VALUES ('a358',250.35, 1112, 7717);
+
+
+
+INSERT INTO Prescription VALUES (3456, to_date('16-08-2021','dd-mm-yyyy'),7773, 1111,'Voltaren');
+INSERT INTO Prescription VALUES (3356, to_date('01-11-2022','dd-mm-yyyy'),7777, 1111,'Tooth wheitining');
+INSERT INTO Prescription VALUES (3256, to_date('01-11-2021','dd-mm-yyyy'),7757, 1211,'Dental crown');
+INSERT INTO Prescription VALUES (3556, to_date('09-09-2021','dd-mm-yyyy'),7177, 1211,'Tooth cleaning');
+INSERT INTO Prescription VALUES (3566, to_date('12-11-2021','dd-mm-yyyy'),7707, 1121,'Tooth filling procedure');
+INSERT INTO Prescription VALUES (3546, to_date('01-12-2021','dd-mm-yyyy'),7727, 1121,'Nitrous Oxide');
+INSERT INTO Prescription VALUES (3446, to_date('01-11-2021','dd-mm-yyyy'),7772, 1112,'Dental crown');
+INSERT INTO Prescription VALUES (3416, to_date('05-07-2020','dd-mm-yyyy'),7774, 1311,'Voltaren');
+INSERT INTO Prescription VALUES (3116, to_date('23-10-2020','dd-mm-yyyy'),7717, 1112,'Tooth cleaning');
+
+
+INSERT INTO Medicine_info VALUES ('Voltaren','Strong toothache reliever',70.00);
+INSERT INTO Medicine_info VALUES ('Tooth wheitining','Teeth whitening with laser beams',1200.20);
+INSERT INTO Medicine_info VALUES ('Dental crown','Dental covering after filling',1500.35);
+INSERT INTO Medicine_info VALUES ('Tooth cleaning','Removing tarter from teeth',250.35);
+INSERT INTO Medicine_info VALUES ('Tooth filling procedure','Tooth decay treatment with filling',250.15);
+INSERT INTO Medicine_info VALUES ('Nitrous Oxide','Using Nitrous Oxide to anesthetize children',350.10);
+
+
+
+INSERT INTO Prescription_medicine VALUES (3456,'Voltaren');
+INSERT INTO Prescription_medicine VALUES (3356,'Tooth wheitining');
+INSERT INTO Prescription_medicine VALUES (3256,'Dental crown');
+INSERT INTO Prescription_medicine VALUES (3556,'Tooth cleaning');
+INSERT INTO Prescription_medicine VALUES (3566,'Tooth filling procedure');
+INSERT INTO Prescription_medicine VALUES (3546,'Nitrous Oxide');
+INSERT INTO Prescription_medicine VALUES (3446,'Dental crown');
+INSERT INTO Prescription_medicine VALUES (3416,'Voltaren');
+INSERT INTO Prescription_medicine VALUES (3116,'Tooth cleaning');
+
+
+
+
+INSERT INTO Leave VALUES (123,'Sick leave',7,to_date('20-10-2020','dd-mm-yyyy'),to_date('28-10-2020','dd-mm-yyyy'), 1111);
+INSERT INTO Leave VALUES (133,'Vacation',2,to_date('01-01-2020','dd-mm-yyyy'),to_date('03-01-2020','dd-mm-yyyy'), 2212);
+INSERT INTO Leave VALUES (132,'Annual leave',10,to_date('17-11-2021','dd-mm-yyyy'),to_date('27-11-2021','dd-mm-yyyy'), 1112);
+INSERT INTO Leave VALUES (103,'Parental leave',60,to_date('30-10-2021','dd-mm-yyyy'),to_date('30-12-2021','dd-mm-yyyy'), 1311);
+
+
+INSERT INTO Treats VALUES (1111,7777);
+INSERT INTO Treats VALUES (1111,7773);
+INSERT INTO Treats VALUES (1211,7757);
+INSERT INTO Treats VALUES (1211,7177);
+INSERT INTO Treats VALUES (1121,7707);
+INSERT INTO Treats VALUES (1121,7727);
+INSERT INTO Treats VALUES (1112,7772);
+INSERT INTO Treats VALUES (1112,7717);
+INSERT INTO Treats VALUES (1311,7774);
+
+
+INSERT INTO Working_hours VALUES (0,6,0, to_date('16-4-2022','dd-mm-yyyy'),1111); 
+INSERT INTO Working_hours VALUES (1,13,2, to_date('16-4-2022','dd-mm-yyyy'),1211);
+INSERT INTO Working_hours VALUES (2,11,3, to_date('16-4-2022','dd-mm-yyyy'),1121);
+INSERT INTO Working_hours VALUES (3,5,0, to_date('16-4-2022','dd-mm-yyyy'),1112);
+INSERT INTO Working_hours VALUES (4,17,5, to_date('16-4-2022','dd-mm-yyyy'),1311);
+
+INSERT INTO Working_hours VALUES (5,11,4, to_date('16-4-2022','dd-mm-yyyy'),2222);
+INSERT INTO Working_hours VALUES (6,10,4, to_date('16-4-2022','dd-mm-yyyy'),2122);
+INSERT INTO Working_hours VALUES (7,14,2, to_date('16-4-2022','dd-mm-yyyy'),2212);
+INSERT INTO Working_hours VALUES (8,14,5, to_date('16-4-2022','dd-mm-yyyy'),2221);
+INSERT INTO Working_hours VALUES (9,12,2, to_date('16-4-2022','dd-mm-yyyy'),2322);
+
+INSERT INTO Working_hours VALUES (11,14,4, to_date('16-4-2022','dd-mm-yyyy'),3333);
+INSERT INTO Working_hours VALUES (12,12,2, to_date('16-4-2022','dd-mm-yyyy'),3334);
+INSERT INTO Working_hours VALUES (13,14,3, to_date('16-4-2022','dd-mm-yyyy'),3343);
+INSERT INTO Working_hours VALUES (14,13,2, to_date('16-4-2022','dd-mm-yyyy'),3433);
+
+INSERT INTO Payroll VALUES (0, 1111);
+INSERT INTO Payroll VALUES (1, 1211);
+INSERT INTO Payroll VALUES (2, 1121);
+INSERT INTO Payroll VALUES (3,1112);
+INSERT INTO Payroll VALUES (4, 1311);
+
+INSERT INTO Payroll VALUES (5, 2222);
+INSERT INTO Payroll VALUES (6, 2122);
+INSERT INTO Payroll VALUES (7, 2212);
+INSERT INTO Payroll VALUES (8, 2221);
+INSERT INTO Payroll VALUES (9,2322);
+
+INSERT INTO Payroll VALUES (11, 3333);
+INSERT INTO Payroll VALUES (12, 3334);
+INSERT INTO Payroll VALUES (13,3343);
+INSERT INTO Payroll VALUES (14, 3433);
+
+
+INSERT INTO Bill_payment VALUES (0001 , 'visa');
+INSERT INTO Bill_payment VALUES(0010 , 'insurance');
+INSERT INTO Bill_payment VALUES(0010 , 'cash');
+INSERT INTO Bill_payment VALUES( 0011, 'insurance');
+INSERT INTO Bill_payment VALUES(0100 , 'visa');
+INSERT INTO Bill_payment VALUES( 0101, 'cash');
+INSERT INTO Bill_payment VALUES ( 0110, 'cash');
+INSERT INTO Bill_payment VALUES (0111 , 'visa');
+INSERT INTO Bill_payment VALUES (1000 , 'insurance');
+INSERT INTO Bill_payment VALUES (1000 , 'cash');
+INSERT INTO Bill_payment VALUES (1001 , 'visa');
+
+
+CREATE VIEW DEDUCTION  AS 
+SELECT  ((Employee.WorkingHours- Working_hours.MonthlyWH) * Employee.RatePerHour) as Deduction  , Payroll.Prcode 
+FROM Employee , Working_hours, Payroll
+where Payroll.Eid = Working_hours.Eid AND   Payroll.Eid = Employee.EmployeeID ;
+
+CREATE VIEW COMP_SALARY  AS 
+SELECT  Employee.WorkingHours * Employee.RatePerHour  as MONTHLY ,Payroll.Prcode
+FROM Employee , Working_hours  , Payroll
+where Employee.EmployeeID = Working_hours.Eid AND Payroll.Eid =  Working_hours.Eid;
+
+
+CREATE VIEW GOSI AS 
+SELECT  (( COMP_SALARY .MONTHLY - DEDUCTION.Deduction)*0.05)  as GOSI , DEDUCTION.Prcode 
+FROM DEDUCTION , COMP_SALARY  
+where DEDUCTION.Prcode = COMP_SALARY.Prcode;
+
+CREATE VIEW Netpay AS 
+SELECT  ( COMP_SALARY.MONTHLY - DEDUCTION.Deduction -GOSI.GOSI)   as netpay , DEDUCTION.Prcode 
+FROM DEDUCTION , COMP_SALARY  ,GOSI
+where DEDUCTION.Prcode = COMP_SALARY.Prcode AND COMP_SALARY.Prcode = GOSI.Prcode;
+
+CREATE VIEW FINAL_Payroll AS
+ Select Payroll.Prcode, DEDUCTION.DEDUCTION, GOSI.GOSI, NETPAY.NETPAY
+ FROM Payroll
+ INNER JOIN DEDUCTION
+ on Payroll.Prcode = DEDUCTION.Prcode  
+ INNER JOIN GOSI
+ on Payroll.Prcode = GOSI.Prcode
+  INNER JOIN NETPAY
+ on Payroll.Prcode = NETPAY.Prcode;
+
+
